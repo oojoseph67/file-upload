@@ -66,7 +66,7 @@ app.use(xss());
 
 // routes
 app.get("/", (req, res) => {
-  res.send('<h1>FILE-UPLOAD API</h1><a href="/">DOCUMENTATION </a>');
+  res.send('<h1>FILE-UPLOAD API</h1><a href="/api/docs">DOCUMENTATION </a>');
 });
 
 // app.use('/api/docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument))
