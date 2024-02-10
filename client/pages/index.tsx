@@ -1,14 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import FileCard from "../components/fileCard";
+import axios from "axios";
+
+const url = "http://localhost:7000/api/v1";
 
 const Home: React.FC = () => {
   const [name, setName] = useState("");
   const [price, setPrice] = useState("");
   const [image, setImage] = useState<File | null>(null);
-
-  console.log("🚀 ~ name:", name)
-  console.log("🚀 ~ r:", price)
-  console.log("🚀 ~ image:", image)
+  const [allProduct, setAllProduct] = useState([]);
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setName(e.target.value);
@@ -18,34 +18,90 @@ const Home: React.FC = () => {
     setPrice(e.target.value);
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      setImage(file);
+      const uploadImage = e.target.files[0];
+      // setImage(uploadImage);
+      const formData = new FormData();
+      formData.append("image", uploadImage);
+
+      try {
+        const response = await axios.post(`${url}/products/uploads`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        const {
+          data: {
+            path2: { src },
+          },
+        } = response;
+        setImage(src);
+      } catch (error) {
+        console.error(error);
+        setImage(null);
+        alert(error);
+        return;
+      }
     }
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!name || !price || !image) {
       alert("Please fill in all fields");
       return;
     }
-    // Handle form submission here (e.g., upload file)
-    console.log("Form submitted:", name, price, image);
-    setName("");
-    setPrice("");
-    setImage(null);
+
+    try {
+      const response = await axios.post(`${url}/products`, {
+        name,
+        price,
+        image,
+      });
+
+      fetchProducts();
+      alert("Product created")
+      setName("");
+      setPrice("");
+      setImage(null);
+      console.log("Form submitted:", name, price, image);
+    } catch (error) {
+      console.error(error);
+      setName("");
+      setPrice("");
+      setImage(null);
+      alert(error);
+      return;
+    }
   };
+
+  const fetchProducts = async () => {
+    try {
+      const response = await axios.get(`${url}/products`);
+      console.log("🚀 ~ fetchProducts ~ response:", response);
+      const { data } = response;
+      const { products, count } = data;
+      setAllProduct(products);
+    } catch (error) {
+      console.log("🚀 ~ fetchProducts ~ error:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchProducts();
+  }, []);
 
   return (
     <div className="container mx-auto p-4">
+      <h3>File Upload</h3>
       <form onSubmit={handleSubmit} className="w-full max-w-lg mx-auto">
         <div className="mb-4">
           <label htmlFor="name" className="block text-gray-700 font-bold mb-2">
             Name
           </label>
           <input
+            autoComplete="off"
             type="text"
             id="name"
             value={name}
@@ -59,7 +115,8 @@ const Home: React.FC = () => {
             Price
           </label>
           <input
-            type="text"
+            autoComplete="off"
+            type="number"
             id="price"
             value={price}
             onChange={handlePriceChange}
@@ -86,11 +143,7 @@ const Home: React.FC = () => {
         </button>
       </form>
       {/* File Card */}
-      <FileCard
-        name="Sample File"
-        price="19.99"
-        imageUrl="https://via.placeholder.com/150"
-      />
+      <FileCard products={allProduct} />
     </div>
   );
 };

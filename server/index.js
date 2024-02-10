@@ -23,10 +23,10 @@ const YAML = require("yamljs");
 }
 
 // route imports
-const productRouter = require('./routes/index')
+const productRouter = require('./routes')
 
 // connectDB
-const connectDB = require("./db/index");
+const connectDB = require("./db");
 
 // authentication middleware
 // const authenticateUser = require("./middleware/authentication");
