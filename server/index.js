@@ -23,7 +23,7 @@ const rateLimiter = require("express-rate-limit");
 
 const swaggerUI = require("swagger-ui-express");
 const YAML = require("yamljs");
-// const swaggerDocument = YAML.load("./swagger.yaml");
+const swaggerDocument = YAML.load("./swagger.yaml");
 
 {
   /**SWAGGER UI */
@@ -69,7 +69,7 @@ app.get("/", (req, res) => {
   res.send('<h1>FILE-UPLOAD API</h1><a href="/api/docs">DOCUMENTATION </a>');
 });
 
-// app.use('/api/docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument))
+app.use('/api/docs', swaggerUI.serve, swaggerUI.setup(swaggerDocument))
 
 app.use("/api/v1/", productRouter);
 

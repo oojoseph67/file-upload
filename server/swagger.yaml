@@ -1,0 +1,127 @@
+swagger: '2.0'
+info:
+  version: '1.0'
+  title: File-Upload API
+  description: "This API allows users to manage products, including uploading product images. Users can perform GET requests to retrieve all products and their details, and POST requests to upload new products with their names, prices, and images."
+  contact:
+    email: oojoseph67@gmail.com
+    url: https://github.com/oojoseph67/
+host: file-upload-api-4cgs.onrender.com
+basePath: /
+securityDefinitions: {}
+schemes:
+  - https
+consumes:
+  - application/json
+  - multipart/form-data
+produces:
+  - application/json
+paths:
+  /:
+    get:
+      description: >-
+        This is a GET request used to retrieve data from an endpoint. There is no request body, but query parameters can be used to specify the desired resource. A successful response will have a `200 OK` status and include HTML web content or JSON data.
+      summary: Base URL
+      tags:
+        - GET
+      operationId: BaseURL
+      deprecated: false
+      produces:
+        - application/json
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          headers: {}
+  /api/v1/products:
+    get:
+      description: >-
+        This is a GET request used to retrieve all products. A successful response will have a `200 OK` status and include a list of products along with their details in JSON format.
+      summary: Get All Products
+      tags:
+        - GET
+      operationId: GetAllProduct
+      deprecated: false
+      produces:
+        - application/json
+      parameters: []
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/GetAllProductResponse'
+  /api/v1/products/uploads:
+    post:
+      description: >-
+        This is a POST request used to upload a new product, including its name, price, and image. A successful response will typically have a `200 OK` or `201 Created` status and include the details of the uploaded product in JSON format.
+      summary: Upload Product
+      tags:
+        - UPLOAD
+      operationId: UploadProduct
+      deprecated: false
+      produces:
+        - application/json
+      consumes:
+        - multipart/form-data
+      parameters:
+        - name: name
+          in: query
+          required: true
+          type: string
+          description: The name of the product.
+        - name: price
+          in: query
+          required: true
+          type: integer
+          format: int32
+          description: The price of the product.
+        - name: image
+          in: formData
+          required: true
+          type: file
+          format: file
+          description: The image file of the product.
+      responses:
+        '200':
+          description: ''
+          schema:
+            $ref: '#/definitions/UploadProductResponse'
+definitions:
+  GetAllProductResponse:
+    type: object
+    properties:
+      products:
+        type: array
+        items:
+          $ref: '#/definitions/Product'
+      count:
+        type: integer
+    required:
+      - products
+      - count
+  UploadProductResponse:
+    type: object
+    properties:
+      product:
+        $ref: '#/definitions/Product'
+    required:
+      - product
+  Product:
+    type: object
+    properties:
+      _id:
+        type: string
+      name:
+        type: string
+      price:
+        type: integer
+      image:
+        type: string
+      __v:
+        type: integer
+    required:
+      - _id
+      - name
+      - price
+      - image
+      - __v
