@@ -4,6 +4,13 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 const fileUpload = require('express-fileupload')
+const cloudinary = require('cloudinary').v2
+
+cloudinary.config({ 
+  cloud_name: process.env.CLOUD_NAME, 
+  api_key: process.env.API_KEY, 
+  api_secret: process.env.API_SECRET
+});
 
 // extra security packages
 const helmet = require("helmet");
@@ -42,7 +49,7 @@ app.use(
   })
 );
 app.use(express.json()); // this gives us access to all the data in req body
-app.use(fileUpload())
+app.use(fileUpload({ useTempFiles: true }))
 app.use(express.static('../client'))
 
 // extra packages
@@ -102,3 +109,4 @@ start();
 // https://app.apimatic.io/dashboard
 // https://editor.swagger.io/
 // https://swagger.io/docs/specification/describing-parameters/
+// https://console.cloudinary.com/
